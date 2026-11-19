@@ -1,6 +1,966 @@
 <!DOCTYPE html>
 <html lang="en">
+<head><!DOCTYPE html>
+<html lang="en">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Katalian MedSource</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pine:#0E4D45; --pine-2:#0A3A34; --pine-soft:#E3EFEC;
+  --ink:#1C2B33; --muted:#5A6B73; --line:#D5DDDF; --surface:#F6F8F7; --card:#FFFFFF;
+  --amber:#F2C14E; --amber-ink:#3A2A00; --danger:#B42318; --danger-soft:#FDECEA;
+  --ok:#1F7A3E; --low:#B26B00; --alloc:#1F5FAD; --focus:#2D7FF9;
+  --header:#FFFFFF; --footer:#17242A; --footer-ink:#D9E2E5;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pine:#3FA393; --pine-2:#2B7E71; --pine-soft:#173A35;
+    --ink:#E6EDEF; --muted:#9FB0B6; --line:#33444B; --surface:#121A1D; --card:#1A2427;
+    --amber:#8C6A12; --amber-ink:#FFF3D1; --danger:#F07167; --danger-soft:#3A1E1C;
+    --ok:#5CCB84; --low:#F0AD4E; --alloc:#79A9F0;
+    --header:#1A2427; --footer:#0B1113; --footer-ink:#B8C6CB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --pine:#3FA393; --pine-2:#2B7E71; --pine-soft:#173A35;
+  --ink:#E6EDEF; --muted:#9FB0B6; --line:#33444B; --surface:#121A1D; --card:#1A2427;
+  --amber:#8C6A12; --amber-ink:#FFF3D1; --danger:#F07167; --danger-soft:#3A1E1C;
+  --ok:#5CCB84; --low:#F0AD4E; --alloc:#79A9F0;
+  --header:#1A2427; --footer:#0B1113; --footer-ink:#B8C6CB;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--surface);color:var(--ink);font:15px/1.5 "Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--pine)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:4px;border:1px solid var(--pine);background:var(--pine);color:#fff;padding:8px 16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--pine-2)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn.ghost:hover{background:var(--pine-soft)}
+.btn.danger{background:var(--danger);border-color:var(--danger)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--pine);text-decoration:underline;cursor:pointer}
+.link:disabled{color:var(--muted);cursor:not-allowed;text-decoration:none}
+.muted{color:var(--muted)}
+.err{color:var(--danger);font-size:13px}
+input[type=text],input[type=password],input[type=number],input[type=date],select,textarea{border:1px solid var(--line);border-radius:4px;padding:7px 10px;background:var(--card)}
+input.invalid{border-color:var(--danger)}
+
+/* Header */
+header.top{background:var(--header);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:24px;height:76px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:none;border:0;cursor:pointer;padding:0}
+.brand svg{flex:none}
+.brand b{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:20px;font-weight:400;color:var(--pine)}
+nav.main{display:flex;gap:4px}
+.dd{position:relative}
+.dd>button{background:none;border:0;padding:10px 12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;border-radius:4px}
+.dd>button:hover,.dd.open>button{background:var(--pine-soft)}
+.dd-menu{position:absolute;top:100%;left:0;min-width:220px;background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:6px;z-index:40;display:none}
+.dd.open .dd-menu{display:block}
+.dd-menu a,.dd-menu button{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:4px;color:var(--ink);text-decoration:none;background:none;border:0;cursor:pointer}
+.dd-menu a:hover,.dd-menu button:hover{background:var(--pine-soft)}
+.utils{display:flex;gap:6px}
+.util{position:relative;background:none;border:0;display:flex;flex-direction:column;align-items:center;font-size:12px;padding:6px 8px;cursor:pointer;border-radius:4px;color:var(--ink)}
+.util:hover{background:var(--pine-soft)}
+.badge{position:absolute;top:-2px;right:0;background:var(--alloc);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:1px 6px;line-height:16px;min-width:18px;text-align:center}
+.utils .dd-menu{left:auto;right:0}
+.dd>button.util{font-weight:400;padding:6px 8px}
+td.nw{white-space:nowrap}
+
+/* Sub-navigation row */
+.subnav{background:var(--pine-soft);border-bottom:1px solid var(--line)}
+.subnav .wrap{display:flex;align-items:center;gap:10px;min-height:48px;flex-wrap:wrap}
+.subnav nav.main{margin-left:0}
+.acct{margin-left:auto;background:var(--card);border:1px solid var(--line);color:var(--ink);text-align:left;cursor:pointer;padding:5px 12px;border-radius:6px;line-height:1.2;display:flex;gap:8px;align-items:center}
+.acct:disabled{cursor:default}
+.acct:not(:disabled):hover{border-color:var(--pine)}
+.acct b{font-size:13.5px}
+.acct small{color:var(--muted);font-size:12.5px}
+.searchbox{flex:1;max-width:480px;margin-left:auto;display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px 2px 2px 12px}
+.searchbox input{flex:1;border:0;background:transparent;color:var(--ink);outline-offset:4px;min-width:0}
+.searchbox button{border:0;background:var(--pine);color:#fff;border-radius:6px;width:36px;height:34px;cursor:pointer;display:grid;place-items:center}
+.qa{background:transparent;color:var(--pine);border:1.5px solid var(--pine);border-radius:6px;padding:6px 14px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center}
+.qa:hover{background:var(--card)}
+
+.x{background:none;border:0;cursor:pointer;font-size:22px;line-height:1;color:inherit;padding:4px 8px}
+
+main{min-height:60vh;padding:16px 0 48px}
+.crumbs{font-size:14px;margin:4px 0 12px}
+.crumbs a{color:var(--ink)}
+.crumbs span.sep{margin:0 8px;color:var(--muted)}
+h1{font-size:34px;font-weight:600;letter-spacing:-.015em;margin:4px 0 16px}
+h2{font-size:20px;margin:0 0 8px}
+.pagehead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.pagehead .right{margin-left:auto;display:flex;gap:16px;align-items:center}
+
+.warn{border:1px solid var(--amber);background:color-mix(in srgb,var(--amber) 18%,var(--card));border-radius:4px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;font-weight:500}
+.tab[aria-selected=true]{border-color:var(--pine);font-weight:700}
+.pill{border:1.5px solid var(--ink);background:transparent;border-radius:22px;padding:8px 18px;cursor:pointer;font-weight:500}
+.pill[aria-pressed=true]{background:var(--ink);color:var(--card)}
+
+/* Cart card */
+.cart{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:18px;overflow:hidden}
+.cart.default{border-color:var(--pine);box-shadow:0 0 0 1px var(--pine)}
+.cart-top{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cart.default .cart-top{background:var(--pine-soft)}
+.cart-top h3{margin:0;font-size:17px}
+.cart-tools{display:flex;gap:6px;margin-left:auto;font-size:13px}
+.cart-tools button{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--ink);display:flex;gap:5px;align-items:center}
+.cart-tools button:hover{border-color:var(--pine)}
+.cart-tools button:disabled{color:var(--muted);cursor:not-allowed;opacity:.6}
+.cart-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 24px;padding:14px 20px;margin:0;font-size:14px}
+.cart-fields dt{font-size:12px;color:var(--muted);margin:0 0 2px}
+.cart-fields dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.cart-fields .wide{grid-column:1/-1}
+.cart-fields .link{font-size:13px;margin-left:6px}
+.cart-foot{display:flex;align-items:center;gap:14px;padding:12px 20px;border-top:1px solid var(--line);background:var(--surface);flex-wrap:wrap}
+.cart-foot .reb{color:var(--muted);font-size:13.5px}
+.cart-foot .tot{margin-left:auto;font-size:14px;color:var(--muted)}
+.cart-foot .tot b{font-size:20px;color:var(--ink);margin-left:6px;font-weight:700}
+.toolbar{display:flex;align-items:center;gap:12px;margin:4px 0 18px;flex-wrap:wrap}
+.toolbar .right{margin-left:auto}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:500;color:var(--ink)}
+.seg button[aria-selected=true]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:700}
+.panel-foot{display:flex;justify-content:flex-end;padding-top:12px;margin-top:4px;border-top:1px solid var(--line)}
+.count{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:var(--amber);color:var(--amber-ink);font-size:11.5px;font-weight:700;text-align:center;margin-left:6px}
+.dotmark{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--amber);margin-left:2px;vertical-align:top}
+.wizard{display:grid;grid-template-columns:170px 1fr}
+.wizard ol{list-style:none;margin:0;padding:18px 16px;background:var(--surface);border-right:1px solid var(--line);font-size:13.5px}
+.wizard li{display:flex;gap:8px;align-items:center;padding:8px 0;color:var(--muted)}
+.wizard li span{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);font-size:12px;font-weight:700}
+.wizard li.on{color:var(--ink);font-weight:700}
+.wizard li.on span{background:var(--pine);border-color:var(--pine);color:#fff}
+.wizard li.done span{border-color:var(--pine);color:var(--pine)}
+.summary-card{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.summary-card dt{color:var(--muted)} .summary-card dd{margin:0}
+.radios{display:flex;gap:16px;flex-wrap:wrap}
+.radios label{display:flex;gap:5px;align-items:center;cursor:pointer}
+.overview{border-top:1px solid var(--line);padding:10px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:14px}
+.overview .tog{background:none;border:0;cursor:pointer;font-weight:600;display:flex;gap:6px;align-items:center}
+.bulk{display:flex;gap:12px;border-left:1px solid var(--line);padding-left:14px}
+.bulk button{background:none;border:0;cursor:pointer;font-size:13px;color:var(--ink)}
+.bulk button:disabled{color:var(--muted);cursor:not-allowed}
+.tablewrap{overflow-x:auto;border-top:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;white-space:nowrap;background:var(--surface)}
+th button{background:none;border:0;font-weight:600;cursor:pointer;padding:0;display:flex;gap:3px;align-items:center}
+td.num,th.num{text-align:right}
+.qty{width:64px;text-align:center}
+.stock{display:flex;gap:6px;align-items:center;font-weight:600;font-size:12.5px;white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%}
+.s-in .dot{background:var(--ok)} .s-low .dot{background:var(--low)} .s-out .dot{background:var(--danger)} .s-alloc .dot{background:var(--alloc)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;border:1px solid currentColor;color:var(--danger);vertical-align:middle}
+.tag.c2{color:var(--alloc)}
+.switch{position:relative;width:40px;height:22px;display:inline-block}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch span{position:absolute;inset:0;background:var(--line);border-radius:22px;cursor:pointer;transition:background .15s}
+.switch span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .15s}
+.switch input:checked+span{background:var(--ok)}
+.switch input:checked+span::after{transform:translateX(18px)}
+.switch input:disabled+span{opacity:.5;cursor:not-allowed}
+.switch input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.summary-toggle{margin:24px 0 10px}
+.summary-toggle button{background:none;border:0;padding:0;cursor:pointer;font-weight:700;font-size:16px;display:flex;gap:6px;align-items:center;color:var(--ink)}
+.inline-edit{display:inline-flex;gap:6px;align-items:center}
+.inline-edit input{padding:3px 8px;font-size:14px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px 18px}
+.stat b{font-size:28px;display:block;color:var(--pine)}
+.result{display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.result h3{margin:0 0 4px;font-size:16px}
+.result .meta{font-size:13px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.add{display:flex;gap:8px;align-items:flex-start}
+.price{font-weight:700;font-size:16px;text-align:right}
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.filters label{display:flex;flex-direction:column;font-size:13px;gap:4px}
+.pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:12px}
+.timeline{display:flex;gap:0;margin:12px 0 20px}
+.timeline div{flex:1;text-align:center;font-size:13px;position:relative;padding-top:22px;color:var(--muted)}
+.timeline div::before{content:"";position:absolute;top:6px;left:50%;width:12px;height:12px;border-radius:50%;background:var(--line);transform:translateX(-50%)}
+.timeline div::after{content:"";position:absolute;top:11px;left:calc(50% + 8px);right:calc(-50% + 8px);height:2px;background:var(--line)}
+.timeline div:last-child::after{display:none}
+.timeline div.done{color:var(--ink);font-weight:600}
+.timeline div.done::before{background:var(--pine)}
+.timeline div.done::after{background:var(--pine)}
+.msg{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:8px}
+.msg.unread{font-weight:700}
+.msg:hover{background:var(--pine-soft)}
+
+.spinner{display:grid;place-items:center;padding:100px 0}
+.spinner i{width:56px;height:56px;border-radius:50%;border:5px solid var(--pine-soft);border-top-color:var(--pine);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spinner i{animation-duration:2.4s}}
+
+/* Modal */
+.scrim{position:fixed;inset:0;background:rgba(10,20,24,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:60px 16px;overflow:auto}
+.scrim.show{display:flex}
+.modal{background:var(--card);border-radius:8px;max-width:640px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal.wide{max-width:920px}
+.modal.side{margin-left:auto;margin-top:-44px;min-height:calc(100vh - 32px);border-radius:8px 0 0 8px;max-width:520px}
+.modal header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal header h2{margin:0;font-size:20px;color:var(--pine)}
+.modal header .x{margin-left:auto}
+.modal .body{padding:18px 20px}
+.modal footer{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+.steps{display:flex;gap:0;margin-bottom:18px}
+.steps div{flex:1;font-size:13px;color:var(--muted);border-top:3px solid var(--line);padding-top:6px}
+.steps div.on{color:var(--ink);font-weight:700;border-color:var(--pine)}
+.kv{display:grid;grid-template-columns:200px 1fr;gap:6px 12px;font-size:14px;margin-bottom:14px}
+.disclosure{font-size:12.5px;color:var(--muted);background:var(--surface);border-radius:4px;padding:10px 12px;margin:12px 0}
+.toastbox{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:200}
+.toast{background:var(--ink);color:var(--card);padding:10px 18px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.25);font-size:14px}
+.toast.bad{background:var(--danger);color:#fff}
+.rating{display:flex;gap:8px}
+.rating button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-weight:700}
+.rating button[aria-pressed=true]{background:var(--pine);color:#fff;border-color:var(--pine)}
+
+/* Login */
+.login{display:grid;grid-template-columns:1.1fr 1fr;min-height:100vh}
+.login .art{background:var(--pine);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login .art h1{font-size:44px;line-height:1.1;max-width:12ch;margin:0}
+.login .art p{max-width:42ch;opacity:.9}
+.login .art svg.bg{position:absolute;right:-80px;bottom:-80px;opacity:.12}
+.login form{align-self:center;justify-self:center;width:min(380px,90%);display:flex;flex-direction:column;gap:14px}
+.login label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px}
+.login .hint{font-size:13px;background:var(--pine-soft);border-radius:4px;padding:10px 12px}
+
+footer.site{background:var(--footer);color:var(--footer-ink);padding:40px 0 28px;font-size:14px}
+footer.site .cols{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:28px}
+footer.site h4{margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.25);color:#fff;font-size:15px}
+footer.site a,footer.site button{color:var(--footer-ink);text-decoration:none;display:block;margin:0 0 9px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+footer.site a:hover,footer.site button:hover{text-decoration:underline}
+footer.site .copy{margin-top:20px;font-size:12px;opacity:.8}
+
+@media (max-width:900px){
+  nav.main{display:none}
+  .utils{margin-left:auto}
+  .cart-fields{grid-template-columns:1fr 1fr}
+  .wizard{grid-template-columns:1fr}
+  .wizard ol{display:flex;gap:16px;border-right:0;border-bottom:1px solid var(--line)}
+  .login{grid-template-columns:1fr}
+  .login .art{padding:32px;min-height:220px}
+  footer.site .cols{grid-template-columns:1fr 1fr}
+  .kv{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="scrim" id="scrim" data-testid="modal-scrim"><div id="modal"></div></div>
+<div class="toastbox" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   Katalian MedSource — demo pharmacy ordering portal
+   All data is fictional. Stored in this browser only.
+   ============================================================ */
+const STORE_KEY = 'kms-db-v1', SESSION_KEY = 'kms-session-v1';
+
+const P = [
+ // id, name, size, mfr, c2, stock, cost, group, rebate, pack, alloc
+ {id:'p1', name:'Amoxicillin 500 mg Capsule', size:'100 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:18.42, group:'amox', reb:.12, pack:100},
+ {id:'p2', name:'Amoxicillin 500 mg Capsule', size:'100 EA', mfr:'Bluecrest Labs', c2:false, stock:'in', cost:14.96, group:'amox', reb:.10, pack:100},
+ {id:'p3', name:'Lisinopril 10 mg Tablet', size:'90 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:9.87, group:'lisin', reb:.15, pack:90},
+ {id:'p4', name:'Lisinopril 10 mg Tablet', size:'90 EA', mfr:'Harborline Generics', c2:false, stock:'out', cost:7.12, group:'lisin', reb:.10, pack:90},
+ {id:'p5', name:'Atorvastatin 20 mg Tablet', size:'90 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:22.30, group:'ator', reb:.18, pack:90},
+ {id:'p6', name:'Atorvastatin 20 mg Tablet', size:'90 EA', mfr:'Bluecrest Labs', c2:false, stock:'low', cost:16.75, group:'ator', reb:.14, pack:90},
+ {id:'p7', name:'Metformin ER 500 mg Tablet', size:'100 EA', mfr:'Harborline Generics', c2:false, stock:'in', cost:12.05, group:'metf', reb:.11, pack:100},
+ {id:'p8', name:'Omeprazole DR 20 mg Capsule', size:'30 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:6.48, group:'omep', reb:.09, pack:30},
+ {id:'p9', name:'Sertraline 50 mg Tablet', size:'30 EA', mfr:'Bluecrest Labs', c2:false, stock:'alloc', cost:5.22, group:'sert', reb:.08, pack:30, alloc:{monthly:40, used:31}},
+ {id:'p10', name:'Levothyroxine 50 mcg Tablet', size:'90 EA', mfr:'Harborline Generics', c2:false, stock:'in', cost:19.90, group:'levo', reb:.13, pack:90},
+ {id:'p11', name:'Amlodipine 5 mg Tablet', size:'90 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:8.14, group:'amlo', reb:.12, pack:90},
+ {id:'p12', name:'Albuterol HFA 90 mcg Inhaler', size:'1 EA', mfr:'Meridian Respiratory', c2:false, stock:'low', cost:24.60, group:'albu', reb:.05, pack:1},
+ {id:'p13', name:'Gabapentin 300 mg Capsule', size:'100 EA', mfr:'Bluecrest Labs', c2:false, stock:'in', cost:11.38, group:'gaba', reb:.12, pack:100},
+ {id:'p14', name:'Prednisone 10 mg Tablet', size:'100 EA', mfr:'Harborline Generics', c2:false, stock:'out', cost:7.95, group:'pred', reb:.10, pack:100},
+ {id:'p15', name:'Ibuprofen 800 mg Tablet', size:'100 EA', mfr:'Northwind Pharma', c2:false, stock:'in', cost:10.66, group:'ibu', reb:.07, pack:100},
+ {id:'p16', name:'Ranitidine 150 mg Tablet', size:'60 EA', mfr:'Harborline Generics', c2:false, stock:'out', cost:4.10, group:'rani', reb:.05, pack:60, discontinued:true},
+ {id:'p20', name:'Oxycodone HCl 5 mg Tablet', size:'100 EA', mfr:'Northwind Pharma', c2:true, stock:'in', cost:36.56, group:'oxy', reb:.16, pack:100},
+ {id:'p21', name:'Oxycodone HCl 5 mg Tablet', size:'100 EA', mfr:'Bluecrest Labs', c2:true, stock:'in', cost:31.80, group:'oxy', reb:.14, pack:100},
+ {id:'p22', name:'Hydrocodone/Acetaminophen 5-325 mg Tablet', size:'100 EA', mfr:'Harborline Generics', c2:true, stock:'alloc', cost:53.77, group:'hydro', reb:.18, pack:100, alloc:{monthly:12, used:9}},
+ {id:'p23', name:'Morphine Sulfate ER 15 mg Tablet', size:'100 EA', mfr:'Meridian Pharma', c2:true, stock:'in', cost:88.20, group:'morph', reb:.20, pack:100},
+ {id:'p24', name:'Methylphenidate 10 mg Tablet', size:'100 EA', mfr:'Bluecrest Labs', c2:true, stock:'low', cost:64.15, group:'mph', reb:.15, pack:100},
+ {id:'p25', name:'Dextroamphetamine-Amphetamine 20 mg Tablet', size:'100 EA', mfr:'Northwind Pharma', c2:true, stock:'alloc', cost:142.90, group:'amph', reb:.22, pack:100, alloc:{monthly:6, used:2}},
+];
+P.forEach((p,i)=>{
+  const n = String(101 + i*7).padStart(4,'0');
+  p.ndc = `99071-${n}-0${(i%3)+1}`;
+  p.upc = `3-99071-${n}${(i%9)}-${(i*3)%10}`;
+  p.cin = String(8100100 + i*137);
+  p.contract = p.c2 ? 'KMSRC-C2' : (i%3===0 ? 'WAC' : 'KMSRC');
+});
+const prod = id => P.find(p=>p.id===id);
+const findByCode = code => { const c = code.trim().replace(/\s/g,''); return P.find(p=>[p.ndc,p.upc,p.cin].some(v=>v.replace(/\s/g,'')===c || v.replace(/-/g,'')===c.replace(/-/g,''))); };
+
+/* ---------- utilities ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+const r2 = n => Math.round(n*100)/100;
+const fmtDate = d => new Date(d).toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+const fmtDT = d => new Date(d).toLocaleString('en-US',{month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit'});
+const daysAgo = n => { const d = new Date(); d.setDate(d.getDate()-n); d.setHours(9+(n%8), (n*7)%60, 0, 0); return d.toISOString(); };
+let rngSeed = 7; const rnd = () => (rngSeed = (rngSeed*9301+49297)%233280)/233280;
+const uid = () => Math.random().toString(36).slice(2,9);
+
+/* ---------- seed data ---------- */
+function seed(){
+  rngSeed = 7;
+  let seq = 511900100;
+  const nextOrder = () => String(seq++);
+  const mkCart = (name, type, isDefault, lines, extra={}) => ({id:uid(), name, orderNo:nextOrder(), type, isDefault, po:'', memo:'', updatedBy:'jellis', updatedAt:daysAgo(Math.floor(rnd()*10)), method: type==='c2'?'csos':'po', lines: lines.map(([pid,qty])=>({pid, qty, subs: !prod(pid).c2})), ...extra});
+  const mkOrders = (acctPrefix) => {
+    const orders = [], backorders = [];
+    const statuses = ['Delivered','Delivered','Delivered','Shipped','Processing','Submitted'];
+    for(let i=0;i<26;i++){
+      const day = 2 + Math.floor(i*2.1);
+      const c2 = i%6===4;
+      const pool = P.filter(p=>p.c2===c2 && !p.discontinued);
+      const lines = [];
+      const n = 1 + Math.floor(rnd()*4);
+      for(let k=0;k<n;k++){ const p = pool[Math.floor(rnd()*pool.length)]; if(lines.find(l=>l.pid===p.id)) continue; const qty = 1+Math.floor(rnd()*6); lines.push({pid:p.id, qty, shipped:qty, cost:p.cost}); }
+      let status = day<4 ? 'Submitted' : day<7 ? 'Processing' : day<10 ? 'Shipped' : statuses[i%statuses.length]==='Submitted' ? 'Delivered' : 'Delivered';
+      const o = {id:uid(), number:nextOrder(), date:daysAgo(day), po: i%3===0 ? `PO-${acctPrefix}${1200+i}` : '', memo: i%5===0 ? 'Weekly restock' : '', method: c2 ? 'csos' : 'po', type: c2?'c2':'non', utn: c2 ? 'KM' + String(1000000+i*313).slice(0,7) : '', status, lines};
+      if(i===3 || i===8 || i===13){ const l = o.lines[0]; if(l.qty>1){ l.shipped = l.qty-1; } else { l.qty = 3; l.shipped = 1; }
+        backorders.push({id:uid(), pid:l.pid, orderId:o.id, orderNumber:o.number, qty:l.qty-l.shipped, orderDate:o.date, expected:daysAgo(-(3+i%5)), status:'Pending'}); }
+      orders.push(o);
+    }
+    // two CSOS orders awaiting signature
+    for(let j=0;j<2;j++){
+      const p = P.filter(p=>p.c2)[j];
+      orders.push({id:uid(), number:nextOrder(), date:daysAgo(j), po:'', memo:'', method:'csos', type:'c2', utn:`KMA${String(410200+j*37)}`, status:'Awaiting signature', lines:[{pid:p.id, qty:2+j, shipped:0, cost:p.cost}]});
+    }
+    orders.forEach(o=>{ if(o.utn) o.utn = o.utn.slice(0,9).padEnd(9,'0'); });
+    backorders.push({id:uid(), pid:'p9', orderId:orders[1].id, orderNumber:orders[1].number, qty:4, orderDate:orders[1].date, expected:daysAgo(-6), status:'Pending'});
+    backorders.push({id:uid(), pid:'p6', orderId:orders[5].id, orderNumber:orders[5].number, qty:2, orderDate:daysAgo(40), expected:daysAgo(30), status:'Fulfilled', closed:daysAgo(31)});
+    backorders.push({id:uid(), pid:'p12', orderId:orders[6].id, orderNumber:orders[6].number, qty:1, orderDate:daysAgo(35), expected:daysAgo(28), status:'Cancelled', closed:daysAgo(29)});
+    backorders.push({id:uid(), pid:'p14', orderId:orders[7].id, orderNumber:orders[7].number, qty:3, orderDate:daysAgo(50), expected:daysAgo(41), status:'Fulfilled', closed:daysAgo(42)});
+    return {orders, backorders};
+  };
+  const messages = () => [
+    {id:uid(), subject:'Holiday delivery schedule', date:daysAgo(1), read:false, body:'Deliveries scheduled for Thursday, November 26 will arrive Friday, November 27. Orders placed after 4 p.m. Wednesday ship the following Monday.'},
+    {id:uid(), subject:'New contract pricing on respiratory items', date:daysAgo(2), read:false, body:'Updated contract pricing on inhalers and nebulizer solutions takes effect on the 1st of next month. Review the Purchase summary report for affected items.'},
+    {id:uid(), subject:'Allocation update: Sertraline 50 mg', date:daysAgo(3), read:false, body:'Monthly allocation for Sertraline 50 mg (Bluecrest Labs) is temporarily limited to 40 units per account.'},
+    {id:uid(), subject:'CSOS certificate renewal reminder', date:daysAgo(5), read:false, body:'Your CSOS signing certificate expires in 45 days. Renew it to avoid delays on Schedule II orders.'},
+    {id:uid(), subject:'Invoice statement available', date:daysAgo(8), read:false, body:'Your October invoice statement is available under Reports.'},
+    {id:uid(), subject:'Welcome to Katalian MedSource', date:daysAgo(40), read:true, body:'Thanks for ordering with us. Use Quick order to add items by NDC, UPC or item number.'},
+  ];
+  const alerts = () => [
+    {title:'Product recall: Albuterol HFA lot 24B117', date:daysAgo(1), body:'Return affected inventory from lot 24B117 using the Online Recall Notification System.'},
+    {title:'Delivery delay in your region', date:daysAgo(0), body:'Severe weather may delay tomorrow’s deliveries by up to 4 hours.'},
+  ];
+  const ediFailures = () => [
+    {code:'99071-9999-01', qty:4, reason:'Item not found'},
+    {code:'99071-0206-02', qty:2, reason:'Discontinued'},
+    {code:'99071-0164-03', qty:30, reason:'Exceeds allocation'},
+  ];
+  const A1 = mkOrders('R'), A2 = mkOrders('H'), A3 = mkOrders('S');
+  const acct = (name, number, dea, o, carts) => ({name, number, dea, carts, orders:o.orders, backorders:o.backorders, messages:messages(), unreadBadge:5, alerts:alerts(), alertsDismissed:false, usedUTN:o.orders.filter(x=>x.utn).map(x=>x.utn), edi:{failures:ediFailures(), dismissed:false}, lists:[{id:uid(), name:'Weekly reorder', items:['p3','p7','p11']},{id:uid(), name:'Flu season', items:['p15','p1']}]});
+  return {
+    seq,
+    users:{
+      buyer:{password:'Demo123!', name:'Jordan Ellis', handle:'jellis', accounts:['A1','A2'], fails:0, locked:false},
+      solo:{password:'Demo123!', name:'Sam Ortiz', handle:'sortiz', accounts:['A3'], fails:0, locked:false},
+    },
+    accounts:{
+      A1: acct('Riverside Community Pharmacy','2150-4410','KM1234563', A1, [
+        mkCart('Default cart','non',true,[['p1',2],['p5',3],['p9',1],['p12',2],['p14',1]]),
+        mkCart('Weekly restock','non',false,[['p3',4],['p7',6],['p11',3],['p13',2]],{po:'PO-R5531'}),
+        mkCart('Clinic order','non',false,[['p8',10],['p15',4],['p10',2]],{memo:'Send to back dock'}),
+        mkCart('Default cart','c2',true,[['p20',2]]),
+        mkCart('Pain management','c2',false,[['p22',1],['p23',1]]),
+      ]),
+      A2: acct('Harbor Street Apothecary','2150-7702','KM7654321', A2, [
+        mkCart('Default cart','non',true,[['p2',3],['p6',2]]),
+        mkCart('Monthly maintenance','non',false,[['p10',5],['p11',5]]),
+        mkCart('Default cart','c2',true,[['p24',1]]),
+      ]),
+      A3: acct('Summit Ridge Pharmacy','2150-3319','KM5550187', A3, [
+        mkCart('Default cart','non',true,[['p3',2],['p8',4]]),
+        mkCart('Default cart','c2',true,[]),
+      ]),
+    },
+    shoppingLists:{},
+  };
+}
+
+/* ---------- persistence ---------- */
+let DB, S;
+function load(){
+  try{ DB = JSON.parse(localStorage.getItem(STORE_KEY)); }catch(e){ DB = null; }
+  if(!DB || !DB.accounts) DB = seed();
+  try{ S = JSON.parse(localStorage.getItem(SESSION_KEY)) || {}; }catch(e){ S = {}; }
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); localStorage.setItem(SESSION_KEY, JSON.stringify(S)); }catch(e){}
+}
+function resetDemo(){
+  DB = seed(); S = {}; save(); UI = freshUI(); closeModal(); location.hash = 'home'; render(); toast('Demo data reset');
+}
+load();
+const user = () => S.user ? DB.users[S.user] : null;
+const A = () => DB.accounts[S.account];
+
+/* ---------- UI state ---------- */
+const freshUI = () => ({tab:'non', expanded:{}, selected:{}, summaryOpen:true, editing:null, qtyErr:{}, sort:{}, searchTerm:'', addErr:{}, orderFilter:{range:'30', status:'all', q:''}, orderPage:1, orderId:null, boView:'pending', msgOpen:null, loginErr:'', openMenu:null});
+let UI = freshUI();
+
+/* ---------- calculations ---------- */
+const lineTotal = l => r2(l.qty * prod(l.pid).cost);
+const cartTotal = c => r2(c.lines.reduce((s,l)=>s+lineTotal(l),0));
+const cartRebate = c => r2(c.lines.reduce((s,l)=>s+lineTotal(l)*prod(l.pid).reb,0));
+const totalLines = () => A().carts.reduce((s,c)=>s+c.lines.length,0);
+const csosCount = () => A().orders.filter(o=>o.status==='Awaiting signature').length;
+const allocRemaining = p => p.alloc ? Math.max(0, p.alloc.monthly - p.alloc.used) : Infinity;
+// Planted defect KM-26: cart quantity accepts up to 1000 (spec says 999)
+const CART_QTY_MAX = 1000;
+// Planted defect KM-34: PO number accepts up to 25 characters (spec says 20)
+const PO_MAX = 25;
+// Planted defect KM-36: UTN accepts 8 or 9 characters (spec says exactly 9)
+const UTN_RE = /^[A-Za-z0-9]{8,9}$/;
+const validQty = (v, max=999) => /^\d+$/.test(String(v)) && +v>=1 && +v<=max;
+
+/* ---------- icons ---------- */
+const I = {
+  logo:`<svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="9" fill="var(--pine)"/><path d="M20 8c-5 4-7 8-7 12a7 7 0 0 0 14 0c0-4-2-8-7-12z" fill="#fff" opacity=".95"/><path d="M20 15v14M14.5 22H25.5" stroke="var(--pine)" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  chev:`<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  chevUp:`<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 7.5 6 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  pen:`<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 21h8" stroke="currentColor" stroke-width="2"/></svg>`,
+  mail:`<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="currentColor"/><path d="M4 7l8 6 8-6" fill="none" stroke="var(--header)" stroke-width="1.8"/></svg>`,
+  gear:`<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4" fill="currentColor"/><path d="M2 20c0-4 3-6 7-6 2 0 3 .4 4 1" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="18" cy="17" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  cart:`<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2.4 10.5h10L21 7H7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="19" r="1.7" fill="currentColor"/><circle cx="17" cy="19" r="1.7" fill="currentColor"/></svg>`,
+  search:`<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4"/></svg>`,
+  bolt:`<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" fill="currentColor"/></svg>`,
+  building:`<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l8-3 8 3v16M9 21v-5h6v5M8 8h2M14 8h2M8 12h2M14 12h2" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  scan:`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V4h3M18 4h3v3M21 17v3h-3M6 20H3v-3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  warn:`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10v5M12 17.5v.5" stroke="currentColor" stroke-width="2"/></svg>`,
+  ext:`<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-1px;margin-left:4px"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  trash:`<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  edit:`<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z" fill="currentColor"/></svg>`,
+  sort:`<svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5l3-3 3 3M3 7l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>`,
+  info:`<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-2px"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.5" stroke="currentColor" stroke-width="2"/></svg>`,
+};
+
+/* ---------- routing ---------- */
+const ROUTES = ['home','search','carts','orders','order-details','backorders','csos','messages','edi','lists','purchase-summary','cs-report','insights'];
+const route = () => { const h = location.hash.replace('#',''); return ROUTES.includes(h) ? h : 'home'; };
+let loading = false, loadTimer = null, loadFailed = false;
+function go(r){ if(location.hash === '#'+r){ startLoad(); } else { location.hash = r; } }
+function startLoad(){ loading = true; loadFailed = false; UI.openMenu = null; render(); clearTimeout(loadTimer); loadTimer = setTimeout(()=>{ loading = false; if(S.failNext){ S.failNext = false; save(); loadFailed = true; } render(); window.scrollTo(0,0); }, 350); }
+window.addEventListener('hashchange', ()=>{ if(user()) startLoad(); });
+
+/* ---------- toast & modal ---------- */
+function toast(msg, bad){ const t = document.createElement('div'); t.className = 'toast' + (bad?' bad':''); t.setAttribute('data-testid','toast'); t.textContent = msg; $('#toasts').appendChild(t); setTimeout(()=>t.remove(), 3200); }
+let modalState = null;
+function openModal(state){ modalState = state; renderModal(); $('#scrim').classList.add('show'); const f = $('#modal [autofocus]') || $('#modal input,#modal button.btn'); f && f.focus(); }
+function closeModal(){ modalState = null; $('#scrim').classList.remove('show'); $('#modal').innerHTML=''; }
+function renderModal(){ if(!modalState) return; $('#modal').innerHTML = MODALS[modalState.type](modalState); }
+
+/* ---------- render: shell ---------- */
+function render(){
+  const app = $('#app');
+  if(!user()){ app.innerHTML = loginView(); bindLogin(); return; }
+  if(!A()) S.account = user().accounts[0];
+  const r = route();
+  app.innerHTML = header() + `<main><div class="wrap">${loading ? `<div class="spinner" data-testid="loading-spinner" role="status" aria-label="Loading"><i></i></div>` : loadFailed ? `<div class="panel" style="margin-top:40px;text-align:center" data-testid="load-error" role="alert"><h2>This page didn’t load</h2><p class="muted">The server didn’t respond. Check your connection and try again.</p><button class="btn" data-act="retry" data-testid="retry">Retry</button></div>` : (VIEWS[r]||VIEWS.home)()}</div></main>` + footer();
+}
+
+const ediPending = () => { const e = A().edi; return e.failures.length && !e.dismissed ? e.failures.length : 0; };
+function header(){
+  const u = user(), a = A(), multi = u.accounts.length>1;
+  const badge = (n, id) => n>0 ? `<span class="badge" data-testid="${id}">${n}</span>` : '';
+  const menu = (key,label,items) => `<div class="dd ${UI.openMenu===key?'open':''}" data-testid="nav-${key}"><button data-act="menu" data-key="${key}" aria-expanded="${UI.openMenu===key}">${label} ${I.chev}</button><div class="dd-menu" role="menu">${items.map(([t,h])=>`<a href="#${h}" role="menuitem" data-testid="nav-link-${h}">${t}</a>`).join('')}</div></div>`;
+  return `
+  <header class="top"><div class="wrap">
+    <button class="brand" data-act="nav" data-r="home" data-testid="logo" aria-label="Katalian MedSource home">${I.logo}<b>Katalian</b><span>MedSource</span></button>
+    <form class="searchbox" data-form="search" role="search"><input type="text" placeholder="Search for products" aria-label="Search for products" data-testid="search-input" value="${esc(UI.searchTerm)}"><button type="submit" aria-label="Search" data-testid="search-button">${I.search}</button></form>
+    <div class="utils">
+      <button class="util" data-act="nav" data-r="csos" data-testid="icon-csos">${I.pen}CSOS${badge(csosCount(),'badge-csos')}</button>
+      <button class="util" data-act="nav" data-r="messages" data-testid="icon-messages">${I.mail}Messages${badge(a.unreadBadge,'badge-messages')}</button>
+      <div class="dd ${UI.openMenu==='settings'?'open':''}"><button class="util" data-act="menu" data-key="settings" data-testid="icon-settings" aria-expanded="${UI.openMenu==='settings'}">${I.gear}Account</button>
+        <div class="dd-menu" role="menu"><div style="padding:8px 10px;font-size:13px" class="muted">Signed in as <b style="color:var(--ink)">${esc(u.name)}</b></div>
+        <button data-act="simfail" data-testid="menu-simulate-error">Simulate a page load error</button><button data-act="reset" data-testid="menu-reset">Reset demo data</button><button data-act="logout" data-testid="menu-signout">Sign out</button></div></div>
+      <button class="util" data-act="nav" data-r="carts" data-testid="icon-carts">${I.cart}Carts${badge(totalLines(),'badge-carts')}</button>
+    </div>
+  </div></header>
+  <div class="subnav"><div class="wrap">
+    <nav class="main" aria-label="Main">
+      ${menu('catalog','Catalog',[['Search','search'],['Shopping lists','lists']])}
+      ${menu('orders',`Orders${ediPending()?'<span class="dotmark" aria-label="New EDI import results"></span>':''}`,[['Order history','orders'],['Backorders','backorders'],['Carts','carts'],['CSOS orders','csos'],[`EDI import results${ediPending()?`<span class="count" data-testid="edi-count">${ediPending()}</span>`:''}`,'edi']])}
+      ${menu('insights','Insights',[['Purchase summary','purchase-summary'],['Controlled substance report','cs-report'],['Inventory insights','insights']])}
+    </nav>
+    <button class="acct" data-act="switch-acct" data-testid="account-switcher" ${multi?'':'disabled'} aria-haspopup="${multi}">${I.building}<span><b>${esc(a.name)}</b> <small data-testid="account-number">Acct ${a.number}</small></span>${multi?I.chev:''}</button>
+    <button class="qa" data-act="quickadd" data-testid="quick-add-button">${I.bolt}Quick order</button>
+  </div></div>`;
+}
+
+function crumbs(list){ return `<nav class="crumbs" aria-label="Breadcrumb" data-testid="breadcrumbs"><a href="#home">Home</a>${list.map(([t,h],i)=>`<span class="sep">/</span>${h && i<list.length-1 ? `<a href="#${h}">${t}</a>` : `<b aria-current="page">${t}</b>`}`).join('')}</nav>`; }
+
+function footer(){
+  const ext = t => `<a href="https://example.com" target="_blank" rel="noopener">${t}${I.ext}</a>`;
+  return `<footer class="site" data-testid="footer"><div class="wrap"><div class="cols">
+    <div><div class="brand" style="color:#fff">${I.logo}<b>Katalian</b><span style="color:#9FD6CC">MedSource</span></div><p style="margin-top:12px;max-width:28ch">Pharmacy ordering for independent and community pharmacies.</p></div>
+    <div><h4>Help</h4><p style="margin:0 0 9px">Call us: 1-800-555-0142</p><a href="#messages">Message center</a><button data-act="feedback" data-testid="feedback-link">Send feedback</button></div>
+    <div><h4>Compliance</h4>${ext('Controlled substance program')}${ext('Product safety sheets')}${ext('Recall notices')}</div>
+    <div><h4>Resources</h4><a href="#edi">EDI import results</a>${ext('Terms and privacy')}<button data-act="reset" data-testid="footer-reset">Reset demo data</button></div>
+  </div><div class="copy">© 2026 Katalian MedSource. Demo application with fictional data.</div></div></footer>`;
+}
+
+/* ---------- login ---------- */
+function loginView(){
+  return `<div class="login">
+    <div class="art"><div class="brand" style="color:#fff">${I.logo.replace(/var\(--pine\)/g,'#fff').replace('fill="#fff" opacity=".95"','fill="#0E4D45"').replace('stroke="#fff"','stroke="#fff"')}<b>Katalian</b><span style="color:#9FD6CC">MedSource</span></div>
+      <div><h1>Pharmacy ordering, one cart at a time.</h1><p>Search the catalog, build carts, and submit controlled-substance orders through CSOS.</p></div>
+      <svg class="bg" width="420" height="420" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4c-8 6-11 12-11 17a11 11 0 0 0 22 0c0-5-3-11-11-17z" fill="#fff"/></svg>
+    </div>
+    <form data-form="login" data-testid="login-form" novalidate>
+      <h2 style="font-size:26px">Sign in</h2>
+      <label>Username<input type="text" id="lu" autocomplete="username" data-testid="login-username" autofocus></label>
+      <label>Password<input type="password" id="lp" autocomplete="current-password" data-testid="login-password"></label>
+      ${UI.loginErr ? `<div class="err" role="alert" data-testid="login-error">${esc(UI.loginErr)}</div>`:''}
+      <button class="btn" type="submit" id="lbtn" disabled data-testid="login-submit">Sign in</button>
+      <div class="hint">Demo users: <b>buyer</b> (two pharmacies) or <b>solo</b> (one pharmacy). Password <b>Demo123!</b></div>
+    </form></div>`;
+}
+function bindLogin(){
+  const f = () => { $('#lbtn').disabled = !($('#lu').value.trim() && $('#lp').value); };
+  $('#lu').addEventListener('input', f); $('#lp').addEventListener('input', f);
+}
+function doLogin(un, pw){
+  const u = DB.users[un.trim().toLowerCase()];
+  if(u && u.locked){ UI.loginErr = 'Account locked. Contact support.'; save(); render(); return; }
+  if(!u || u.password !== pw){
+    if(u){ u.fails++; if(u.fails>=5){ u.locked = true; UI.loginErr = 'Account locked. Contact support.'; save(); render(); return; } }
+    UI.loginErr = 'Invalid username or password'; save(); render(); return;
+  }
+  u.fails = 0; S.user = un.trim().toLowerCase(); S.account = u.accounts[0];
+  u.accounts.forEach(id=>DB.accounts[id].alertsDismissed=false);
+  UI = freshUI(); save(); location.hash = 'home'; startLoad();
+}
+
+/* ---------- views ---------- */
+const VIEWS = {};
+VIEWS.home = () => {
+  const a = A(); const pend = a.backorders.filter(b=>b.status==='Pending').length;
+  const recent = [...a.orders].sort((x,y)=>y.date.localeCompare(x.date)).slice(0,5);
+  return `<h1 data-testid="page-title">Welcome back, ${esc(user().name.split(' ')[0])}</h1>
+  <div class="grid3">
+    <div class="stat"><b data-testid="home-lines">${totalLines()}</b>Lines across ${a.carts.length} carts <div><a href="#carts">Review carts</a></div></div>
+    <div class="stat"><b data-testid="home-csos">${csosCount()}</b>CSOS orders awaiting signature <div><a href="#csos">Sign orders</a></div></div>
+    <div class="stat"><b data-testid="home-backorders">${pend}</b>Pending backorders <div><a href="#backorders">View backorders</a></div></div>
+  </div>
+  <div class="panel"><h2>Recent orders</h2>${ordersTable(recent)}</div>`;
+};
+
+function stockCell(p){
+  const m = {in:['s-in','In stock'],low:['s-low','Low stock'],out:['s-out','Out of stock'],alloc:['s-alloc','Allocated']}[p.stock];
+  return `<span class="stock ${m[0]}" data-testid="stock-${p.stock}"><span class="dot"></span>${m[1]}</span>`;
+}
+
+VIEWS.search = () => {
+  const t = UI.searchTerm.trim(); const tl = t.toLowerCase();
+  if(t.length < 2) return crumbs([['Search',null]]) + `<h1>Search</h1><p class="muted" data-testid="search-hint">Type at least 2 characters in the search bar to find products by name, NDC, UPC or item number.</p>`;
+  const res = P.filter(p => [p.name,p.ndc,p.upc,p.cin,p.mfr].some(v=>v.toLowerCase().includes(tl) || v.replace(/-/g,'').includes(tl.replace(/-/g,''))));
+  return crumbs([['Search results',null]]) + `<h1>Results for “${esc(t)}”</h1>` +
+  (res.length===0 ? `<div class="panel" data-testid="no-results"><h2>No products found for “${esc(t)}”</h2><p class="muted">Check the spelling, search by generic name, or enter an 11-digit NDC without dashes.</p></div>` :
+  `<p class="muted" data-testid="result-count">${res.length} products</p><div class="panel" style="padding-top:0;padding-bottom:0">` + res.map(p=>`
+    <div class="result" data-testid="result-${p.id}">
+      <div><h3><span data-testid="result-name">${esc(p.name)}, ${p.size}</span> ${p.c2?'<span class="tag c2" data-testid="c2-tag">C2</span>':''} ${p.discontinued?'<span class="tag">Discontinued</span>':''}</h3>
+        <div class="meta"><span>${esc(p.mfr)}</span><span>NDC ${p.ndc}</span><span>Item # ${p.cin}</span>${stockCell(p)}</div>
+        <div class="meta" style="margin-top:4px">${p.alloc?`<button class="link" data-act="alloc" data-pid="${p.id}" data-testid="view-allocation">View allocation</button>`:''}${hasSubs(p)?`<button class="link" data-act="subs" data-pid="${p.id}" data-testid="view-subs">See alternatives</button>`:''}</div></div>
+      <div><div class="price" data-testid="result-price">${money(p.cost)}</div>
+        <div class="add" style="margin-top:6px"><input type="text" inputmode="numeric" class="qty" value="1" aria-label="Quantity" data-sq="${p.id}" data-testid="result-qty"><button class="btn small" data-act="add" data-pid="${p.id}" data-testid="add-to-cart" ${p.discontinued?'disabled':''}>Add to cart</button></div>
+        ${UI.addErr[p.id]?`<div class="err" data-testid="add-error">${esc(UI.addErr[p.id])}</div>`:''}</div>
+    </div>`).join('') + `</div>`);
+};
+const hasSubs = p => P.some(q=>q.group===p.group && q.id!==p.id);
+
+function sortedLines(c){
+  const s = UI.sort[c.id]; if(!s) return c.lines;
+  const key = { qty:l=>l.qty, name:l=>prod(l.pid).name, ndc:l=>prod(l.pid).ndc, cin:l=>prod(l.pid).cin, contract:l=>prod(l.pid).contract, est:l=>prod(l.pid).cost*0.68, inv:l=>prod(l.pid).cost, total:l=>lineTotal(l) }[s.col];
+  return [...c.lines].sort((a,b)=>{ const x=key(a), y=key(b); return (x>y?1:x<y?-1:0) * (s.dir==='asc'?1:-1); });
+}
+
+function cartCard(c){
+  const sel = UI.selected[c.id] || []; const exp = !!UI.expanded[c.id];
+  const ed = UI.editing && UI.editing.cart===c.id ? UI.editing : null;
+  const invalidQty = c.lines.some(l=>!validQty(l.qty, CART_QTY_MAX));
+  const th = (col,label,num) => `<th class="${num?'num':''}"><button data-act="sort" data-cart="${c.id}" data-col="${col}">${label} ${I.sort}</button></th>`;
+  const methods = c.type==='c2' ? [['csos','Electronic (CSOS)'],['paper','Paper (DEA blank)'],['po','PO Export']] : [['po','PO Export']];
+  const editor = field => `<span class="inline-edit"><input type="text" value="${esc(ed.value)}" data-edit="${field}" data-testid="edit-${field}" ${field==='name'?'maxlength="60"':''}><button class="btn small" data-act="save-edit" data-testid="save-${field}">Save</button><button class="btn small ghost" data-act="cancel-edit" data-testid="cancel-${field}">Cancel</button></span>${ed.err?`<div class="err" data-testid="edit-error">${esc(ed.err)}</div>`:''}`;
+  const field = (f,label,val) => `<div><dt>${label}</dt><dd>${ed && ed.field===f ? editor(f) : `<span data-testid="${f}-value">${val?esc(val):'<span class="muted">None</span>'}</span><button class="link" data-act="edit" data-cart="${c.id}" data-field="${f}" data-testid="${f}-link" aria-label="${val?'Edit':'Add'} ${label}">${val?'Edit':'Add'}</button>`}</dd></div>`;
+  return `<section class="cart ${c.isDefault?'default':''}" data-testid="cart-${c.orderNo}" data-cart-name="${esc(c.name)}">
+    <div class="cart-top">
+      ${ed && ed.field==='name' ? editor('name') : `<h3 data-testid="cart-name">${c.isDefault?'Default cart':'Cart'}: ${esc(c.isDefault?c.orderNo:c.name)}</h3>`}
+      <div class="cart-tools"><button data-act="edit" data-cart="${c.id}" data-field="name" data-testid="edit-cart-name">${I.edit}Edit cart name</button>
+        <button data-act="del-cart" data-cart="${c.id}" data-testid="delete-cart" ${c.isDefault?'disabled title="The default cart can’t be deleted. Remove its lines instead."':''}>${I.trash}Delete</button></div>
+    </div>
+    <dl class="cart-fields">
+      <div><dt>Order number</dt><dd data-testid="order-number">${c.orderNo}</dd></div>
+      ${field('po','PO number',c.po)}${field('memo','PO memo',c.memo)}
+      <div><dt>Last updated</dt><dd class="muted">${esc(c.updatedBy)} · ${fmtDT(c.updatedAt)}</dd></div>
+      <div class="wide"><dt>Submission method</dt><dd><span class="radios" role="radiogroup">${methods.map(([v,l])=>`<label><input type="radio" name="m-${c.id}" value="${v}" data-method="${c.id}" ${c.method===v?'checked':''} data-testid="method-${v}">${l}</label>`).join('')}</span></dd></div>
+    </dl>
+    <div class="overview">
+      <button class="tog" data-act="toggle-cart" data-cart="${c.id}" aria-expanded="${exp}" data-testid="cart-overview-toggle">${exp?I.chevUp:I.chev} Line items</button>
+      <span data-testid="line-count">${c.lines.length} Lines</span>
+      ${exp?`<span data-testid="selected-count">${sel.length} Selected</span>
+      <span class="bulk"><button data-act="bulk-move" data-cart="${c.id}" ${sel.length?'':'disabled'} data-testid="bulk-move">Move to</button><button data-act="bulk-del" data-cart="${c.id}" ${sel.length?'':'disabled'} data-testid="bulk-delete">Delete</button><button data-act="bulk-list" data-cart="${c.id}" ${sel.length?'':'disabled'} data-testid="bulk-add-to-list">Add to list</button></span>`:''}
+    </div>
+    ${exp ? `<div class="tablewrap"><table data-testid="cart-table"><thead><tr>
+      <th><input type="checkbox" aria-label="Select all lines" data-selall="${c.id}" ${c.lines.length && sel.length===c.lines.length?'checked':''} data-testid="select-all"></th>
+      ${th('qty','Qty')}${th('name','Product name')}<th>Stock</th><th>Allow subs</th>${th('ndc','NDC')}<th>UPC</th>${th('cin','Item #')}${th('contract','Contract')}${th('est','Net cost (est.)',1)}<th class="num">Unit cost</th>${th('inv','Invoice cost',1)}${th('total','Total cost',1)}
+    </tr></thead><tbody>${c.lines.length? sortedLines(c).map(l=>{ const p = prod(l.pid); const k = c.id+'|'+l.pid; return `<tr data-testid="line-${p.ndc}">
+      <td><input type="checkbox" aria-label="Select ${esc(p.name)}" data-sel="${c.id}" data-pid="${p.id}" ${sel.includes(p.id)?'checked':''} data-testid="line-select"></td>
+      <td><input type="text" inputmode="numeric" class="qty ${UI.qtyErr[k]?'invalid':''}" value="${UI.qtyErr[k]?esc(UI.qtyErr[k].v):l.qty}" data-qty="${c.id}" data-pid="${p.id}" aria-label="Quantity" data-testid="line-qty">${UI.qtyErr[k]?`<div class="err" data-testid="qty-error">${esc(UI.qtyErr[k].m)}</div>`:''}</td>
+      <td style="min-width:220px"><a href="#search" data-act="prodlink" data-pid="${p.id}" data-testid="line-product">${esc(p.name)}, ${p.size}</a> ${p.c2?'<span class="tag c2">C2</span>':''}<div style="font-size:12.5px">${hasSubs(p)?`<button class="link" data-act="subs" data-pid="${p.id}" data-cart="${c.id}" data-testid="line-subs">See alternatives</button>`:''}</div></td>
+      <td>${stockCell(p)}${p.alloc?`<div><button class="link" style="font-size:12.5px" data-act="alloc" data-pid="${p.id}" data-testid="line-allocation">View allocation</button></div>`:''}</td>
+      <td><label class="switch" title="${p.c2?'Substitutions not allowed for C2 items':'Allow substitutions'}"><input type="checkbox" data-subs="${c.id}" data-pid="${p.id}" ${l.subs&&!p.c2?'checked':''} ${p.c2?'disabled':''} aria-label="Allow substitutions" data-testid="allow-subs"><span></span></label></td>
+      <td class="nw">${p.ndc}</td><td class="nw">${p.upc}</td><td>${p.cin}</td><td class="nw"><b>${p.contract}</b></td>
+      <td class="num">${money(p.cost*0.68)}</td><td class="num">$${(p.cost/p.pack).toFixed(4)}</td><td class="num" data-testid="invoice-cost">${money(p.cost)}</td><td class="num" data-testid="line-total">${money(lineTotal(l))}</td>
+    </tr>`;}).join('') : `<tr><td colspan="13" class="muted" style="text-align:center;padding:24px" data-testid="empty-cart">This cart is empty. Search for products or use Quick order to add items.</td></tr>`}</tbody></table></div>` : ''}
+    <div class="cart-foot">
+      <span class="reb">Estimated rebate <b data-testid="est-rebate">${c.lines.length? '-'+money(cartRebate(c)) : '—'}</b> <span title="Estimated from contract rebate rates on each line. Final rebates post on your monthly statement.">${I.info}</span></span>
+      <span class="tot">Total cost <b data-testid="total-cost">${money(cartTotal(c))}</b></span>
+      <button class="btn ghost" data-act="analyze" data-cart="${c.id}" data-testid="analyze-cart">Find savings</button>
+      <button class="btn" data-act="submit" data-cart="${c.id}" data-testid="submit-cart" ${!c.lines.length||invalidQty?'disabled':''}>Submit cart</button>
+    </div>
+  </section>`;
+}
+
+VIEWS.carts = () => {
+  const a = A(); const t = UI.tab; const carts = a.carts.filter(c=>c.type===t);
+  const def = carts.find(c=>c.isDefault); const others = carts.filter(c=>!c.isDefault);
+  if(def && UI.expanded[def.id]===undefined) UI.expanded[def.id] = true;
+  const n = ty => a.carts.filter(c=>c.type===ty).length;
+  return crumbs([['Carts',null]]) + `
+  <h1 data-testid="page-title">Carts</h1>
+  <div class="toolbar">
+    <div class="seg" role="tablist" aria-label="Cart type"><button role="tab" aria-selected="${t==='non'}" data-act="tab" data-t="non" data-testid="tab-non-c2">Standard carts (${n('non')})</button><button role="tab" aria-selected="${t==='c2'}" data-act="tab" data-t="c2" data-testid="tab-c2">Schedule II carts (${n('c2')})</button></div>
+    <div class="dd ${UI.openMenu==='cartactions'?'open':''}"><button class="btn ghost small" data-act="menu" data-key="cartactions" data-testid="cart-actions">Cart actions ${I.chev}</button><div class="dd-menu"><button data-act="new-cart" data-testid="new-cart">New cart</button></div></div>
+  </div>
+  ${def?cartCard(def):''}
+  ${others.length ? `<div class="summary-toggle"><button data-act="summary" aria-expanded="${UI.summaryOpen}" data-testid="summary-toggle">${UI.summaryOpen?I.chevUp:I.chev} Other carts (${others.length})</button></div>${UI.summaryOpen?others.map(cartCard).join(''):''}` : ''}`;
+};
+
+function ordersTable(list){
+  if(!list.length) return `<p class="muted" data-testid="orders-empty">No orders match your filters.</p>`;
+  const tot = o => r2(o.lines.reduce((s,l)=>s+l.qty*l.cost,0));
+  return `<div class="tablewrap" style="border:0"><table data-testid="orders-table"><thead><tr><th>Order number</th><th>Date</th><th>PO number</th><th>Submission method</th><th class="num">Lines</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
+  ${list.map(o=>`<tr data-testid="order-row-${o.number}"><td><a href="#order-details" data-act="open-order" data-id="${o.id}" data-testid="order-link">${o.number}</a></td><td>${fmtDate(o.date)}</td><td>${esc(o.po)||'<span class="muted">—</span>'}</td><td>${methodLabel(o.method)}</td><td class="num">${o.lines.length}</td><td class="num">${money(tot(o))}</td><td data-testid="order-status">${o.status}</td></tr>`).join('')}</tbody></table></div>`;
+}
+const methodLabel = m => ({csos:'Electronic (CSOS)', paper:'Paper (DEA blank)', po:'PO Export'})[m];
+
+VIEWS.orders = () => {
+  const f = UI.orderFilter; const now = Date.now();
+  let list = [...A().orders].sort((x,y)=>y.date.localeCompare(x.date));
+  if(f.range!=='all') list = list.filter(o => now - new Date(o.date).getTime() <= (+f.range)*864e5);
+  if(f.status!=='all') list = list.filter(o=>o.status===f.status);
+  if(f.q.trim()) { const q = f.q.trim().toLowerCase(); list = list.filter(o=>o.number.includes(q) || o.po.toLowerCase().includes(q)); }
+  const pages = Math.max(1, Math.ceil(list.length/20)); UI.orderPage = Math.min(UI.orderPage, pages);
+  const pg = list.slice((UI.orderPage-1)*20, UI.orderPage*20);
+  return crumbs([['Order history',null]]) + `<h1 data-testid="page-title">Order history</h1>
+  <form class="filters" data-form="orderfilter">
+    <label>Date range<select data-of="range" data-testid="filter-range"><option value="7" ${f.range==='7'?'selected':''}>Last 7 days</option><option value="30" ${f.range==='30'?'selected':''}>Last 30 days</option><option value="90" ${f.range==='90'?'selected':''}>Last 90 days</option><option value="all" ${f.range==='all'?'selected':''}>All dates</option></select></label>
+    <label>Status<select data-of="status" data-testid="filter-status">${['all','Awaiting signature','Awaiting DEA form','Submitted','Processing','Shipped','Delivered'].map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${s==='all'?'All statuses':s}</option>`).join('')}</select></label>
+    <label>Order or PO number<input type="text" data-of="q" value="${esc(f.q)}" data-testid="filter-search" placeholder="e.g. 511900104"></label>
+    <button class="btn" type="submit" data-testid="filter-apply">Search</button>
+  </form>
+  <div class="panel">${ordersTable(pg)}
+  ${list.length>20?`<div class="pager" data-testid="pager"><button class="btn small ghost" data-act="page" data-p="${UI.orderPage-1}" ${UI.orderPage<=1?'disabled':''}>Previous</button><span>Page ${UI.orderPage} of ${pages}</span><button class="btn small ghost" data-act="page" data-p="${UI.orderPage+1}" ${UI.orderPage>=pages?'disabled':''}>Next</button></div>`:''}</div>`;
+};
+
+VIEWS['order-details'] = () => {
+  const o = A().orders.find(x=>x.id===UI.orderId);
+  if(!o) return crumbs([['Order history','orders'],['Order details',null]]) + `<h1>Order details</h1><p>Select an order from <a href="#orders">Order history</a>.</p>`;
+  const flow = ['Submitted','Processing','Shipped','Delivered']; const idx = flow.indexOf(o.status);
+  const tot = r2(o.lines.reduce((s,l)=>s+l.qty*l.cost,0));
+  return crumbs([['Order history','orders'],['Order details',null]]) + `
+  <div class="pagehead"><h1 data-testid="page-title">Order ${o.number}</h1><div class="right"><button class="btn ghost" data-act="reorder" data-id="${o.id}" data-testid="reorder-all">Reorder all</button></div></div>
+  <div class="panel"><div class="kv" data-testid="order-header">
+    <span class="muted">Order date</span><span>${fmtDT(o.date)}</span>
+    <span class="muted">Status</span><b data-testid="order-detail-status">${o.status}</b>
+    <span class="muted">PO number</span><span>${esc(o.po)||'—'}</span>
+    <span class="muted">PO memo</span><span>${esc(o.memo)||'—'}</span>
+    <span class="muted">Submission method</span><span>${methodLabel(o.method)}</span>
+    ${o.type==='c2'?`<span class="muted">Unique tracking number</span><span data-testid="order-utn">${esc(o.utn)||'—'}</span>`:''}
+    ${o.form222?`<span class="muted">DEA Form 222 serial</span><span>${esc(o.form222)}</span>`:''}
+  </div>
+  ${idx>=0?`<div class="timeline" data-testid="status-timeline">${flow.map((s,i)=>`<div class="${i<=idx?'done':''}">${s}</div>`).join('')}</div>`:`<p class="warn">${o.status==='Awaiting DEA form'?'Mail the completed DEA Form 222 to process this order.':'This order ships after its CSOS signature is received.'}</p>`}
+  <div class="tablewrap"><table data-testid="order-lines"><thead><tr><th>Product</th><th>NDC</th><th class="num">Ordered</th><th class="num">Shipped</th><th class="num">Invoice cost</th><th class="num">Total</th></tr></thead><tbody>
+  ${o.lines.map(l=>{const p=prod(l.pid); const short = l.shipped<l.qty && ['Shipped','Delivered'].includes(o.status); return `<tr><td>${esc(p.name)}, ${p.size} ${short?`<a href="#backorders" class="tag" data-testid="backordered-tag">Backordered</a>`:''}</td><td>${p.ndc}</td><td class="num">${l.qty}</td><td class="num">${['Shipped','Delivered'].includes(o.status)?l.shipped:0}</td><td class="num">${money(l.cost)}</td><td class="num">${money(l.qty*l.cost)}</td></tr>`;}).join('')}
+  <tr><td colspan="5" class="num"><b>Order total</b></td><td class="num"><b data-testid="order-total">${money(tot)}</b></td></tr></tbody></table></div></div>`;
+};
+
+VIEWS.backorders = () => {
+  const a = A(); const pend = UI.boView==='pending';
+  const list = a.backorders.filter(b => pend ? b.status==='Pending' : b.status!=='Pending');
+  return crumbs([['Backorders',null]]) + `<h1 data-testid="page-title">Backorders</h1>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${pend}" data-act="bo" data-v="pending" data-testid="pending-backorders">Pending backorders</button><button class="tab" role="tab" aria-selected="${!pend}" data-act="bo" data-v="history" data-testid="backorder-history">Backorder history</button></div>
+  <div class="panel">${list.length===0 ? `<p class="muted" data-testid="backorders-empty">${pend?'You have no pending backorders.':'No backorder history yet.'}</p>` : `<div class="tablewrap" style="border:0"><table data-testid="backorders-table"><thead><tr><th>Product</th><th>NDC</th><th>Order number</th><th class="num">Qty backordered</th><th>Order date</th><th>${pend?'Expected':'Status'}</th><th>${pend?'':'Closed'}</th></tr></thead><tbody>
+  ${list.map(b=>{const p=prod(b.pid); return `<tr data-testid="backorder-row"><td>${esc(p.name)}, ${p.size}</td><td>${p.ndc}</td><td>${b.orderNumber}</td><td class="num">${b.qty}</td><td>${fmtDate(b.orderDate)}</td><td>${pend?fmtDate(b.expected):b.status}</td><td>${pend?`<button class="btn small ghost" data-act="cancel-bo" data-id="${b.id}" data-testid="cancel-backorder">Cancel</button>`:fmtDate(b.closed)}</td></tr>`;}).join('')}</tbody></table></div>`}
+  <div class="panel-foot"><button class="btn ghost small" data-act="export" data-testid="export">Export CSV</button></div></div>`;
+};
+
+VIEWS.csos = () => {
+  const list = A().orders.filter(o=>o.status==='Awaiting signature');
+  return crumbs([['CSOS orders',null]]) + `<h1 data-testid="page-title">CSOS orders</h1><p class="muted">Schedule II orders placed electronically ship after you sign them with your CSOS certificate.</p>
+  <div class="panel">${list.length?`<div class="tablewrap" style="border:0"><table data-testid="csos-table"><thead><tr><th>Order number</th><th>Date</th><th>Unique tracking number</th><th class="num">Lines</th><th></th></tr></thead><tbody>${list.map(o=>`<tr data-testid="csos-row-${o.number}"><td><a href="#order-details" data-act="open-order" data-id="${o.id}">${o.number}</a></td><td>${fmtDT(o.date)}</td><td>${esc(o.utn)}</td><td class="num">${o.lines.length}</td><td><button class="btn small" data-act="sign" data-id="${o.id}" data-testid="sign-order">Sign order</button></td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" data-testid="csos-empty">No orders are waiting for a signature.</p>`}</div>`;
+};
+
+VIEWS.messages = () => {
+  const a = A(); const list = [...a.messages].sort((x,y)=>y.date.localeCompare(x.date));
+  const open = a.messages.find(m=>m.id===UI.msgOpen);
+  return crumbs([['Messages',null]]) + `<div class="pagehead"><h1 data-testid="page-title">Messages</h1><div class="right"><button class="btn ghost small" data-act="markall" data-testid="mark-all-read">Mark all as read</button></div></div>
+  <div class="panel" style="padding:0">${list.map(m=>`<div class="msg ${m.read?'':'unread'}" data-act="open-msg" data-id="${m.id}" tabindex="0" role="button" data-testid="message-${m.read?'read':'unread'}"><span>${esc(m.subject)}</span><span class="muted" style="font-weight:400">${fmtDate(m.date)}</span>${UI.msgOpen===m.id?`<div style="grid-column:1/-1;font-weight:400" data-testid="message-body">${esc(m.body)}</div>`:''}</div>`).join('')}</div>`;
+};
+
+VIEWS.edi = () => {
+  const e = A().edi; const f = e.failures;
+  if(f.length && !e.dismissed){ e.dismissed = true; save(); }
+  return crumbs([['EDI import results',null]]) + `<h1 data-testid="page-title">EDI import results</h1>
+  <p class="muted">Lines from your most recent EDI file that could not be added to a cart.</p>
+  <div class="panel">${f.length?`<table data-testid="edi-table"><thead><tr><th>Item code</th><th class="num">Quantity requested</th><th>Reason</th></tr></thead><tbody>${f.map(x=>`<tr><td>${x.code}</td><td class="num">${x.qty}</td><td>${x.reason}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">All items from your last import were added.</p>'}</div>`;
+};
+
+/* ---------- modals ---------- */
+const mHead = (t, testid) => `<header><h2 data-testid="${testid||'modal-title'}">${t}</h2><button class="x" data-act="close" aria-label="Close" data-testid="modal-close">×</button></header>`;
+const MODALS = {
+  confirm: s => `<div class="modal" role="dialog" aria-modal="true" data-testid="confirm-dialog">${mHead(s.title)}<div class="body"><p data-testid="confirm-message">${esc(s.msg)}</p></div><footer><button class="btn ghost" data-act="close" data-testid="confirm-cancel">Cancel</button><button class="btn ${s.danger?'danger':''}" data-act="confirm-ok" data-testid="confirm-ok">${s.ok||'Confirm'}</button></footer></div>`,
+  accounts: () => `<div class="modal" role="dialog" aria-modal="true" data-testid="account-panel">${mHead('Switch account')}<div class="body">${user().accounts.map(id=>{const a=DB.accounts[id]; return `<button class="btn ${id===S.account?'':'ghost'}" style="width:100%;justify-content:space-between;margin-bottom:8px" data-act="pick-acct" data-id="${id}" data-testid="account-option-${a.number}"><span>${esc(a.name)}</span><span>#${a.number}</span></button>`;}).join('')}</div></div>`,
+  alloc: s => { const p = prod(s.pid); return `<div class="modal" role="dialog" aria-modal="true" data-testid="allocation-modal">${mHead('Allocation')}<div class="body"><p><b>${esc(p.name)}, ${p.size}</b><br><span class="muted">NDC ${p.ndc}</span></p><div class="kv"><span class="muted">Monthly allocation</span><span data-testid="alloc-monthly">${p.alloc.monthly}</span><span class="muted">Quantity used</span><span data-testid="alloc-used">${p.alloc.used}</span><span class="muted">Quantity remaining</span><b data-testid="alloc-remaining">${allocRemaining(p)}</b></div></div></div>`; },
+  subs: s => { const p = prod(s.pid); const alts = P.filter(q=>q.group===p.group && q.id!==p.id).sort((a,b)=>a.cost-b.cost); return `<div class="modal" role="dialog" aria-modal="true" data-testid="subs-panel">${mHead('Alternatives')}<div class="body"><p>For <b>${esc(p.name)}, ${p.size}</b> (${esc(p.mfr)}, ${money(p.cost)})</p><table><thead><tr><th>Product</th><th>NDC</th><th>Stock</th><th class="num">Invoice cost</th>${s.cart?'<th></th>':''}</tr></thead><tbody>${alts.map(q=>`<tr data-testid="sub-row"><td>${esc(q.name)}<div class="muted" style="font-size:12px">${esc(q.mfr)}</div></td><td>${q.ndc}</td><td>${stockCell(q)}</td><td class="num">${money(q.cost)}</td>${s.cart?`<td><button class="btn small" data-act="swap" data-cart="${s.cart}" data-from="${p.id}" data-to="${q.id}" data-testid="swap">Swap</button></td>`:''}</tr>`).join('')}</tbody></table></div></div>`; },
+  quickadd: s => { const carts = A().carts; return `<div class="modal wide" role="dialog" aria-modal="true" data-testid="quick-add-modal">${mHead('Quick order')}<div class="body">
+    <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px">Add to cart <select data-qa-cart data-testid="qa-target-cart">${carts.map(c=>`<option value="${c.id}" ${c.id===s.cart?'selected':''}>${c.type==='c2'?'Schedule II':'Standard'}: ${esc(c.isDefault?'Default cart '+c.orderNo:c.name)}</option>`).join('')}</select></label>
+    <table><thead><tr><th>#</th><th>Item code (NDC, UPC or item #)</th><th>Quantity</th><th>Result</th></tr></thead><tbody>${s.rows.map((r,i)=>`<tr data-testid="qa-row"><td>${i+1}</td><td><input type="text" value="${esc(r.code)}" data-qa-code="${i}" data-testid="qa-code" style="width:100%"></td><td><input type="text" class="qty" value="${esc(r.qty)}" data-qa-qty="${i}" data-testid="qa-qty"></td><td data-testid="qa-result" class="${r.ok===false?'err':''}">${esc(r.result||'')}</td></tr>`).join('')}</tbody></table>
+    <button class="link" style="margin-top:10px" data-act="qa-row" ${s.rows.length>=25?'disabled':''} data-testid="qa-add-row">Add row</button> <span class="muted" style="font-size:13px">${s.rows.length} of 25 rows</span>
+    <p class="muted" style="font-size:13px">Try 99071-0101-01, ${P[4].cin} or ${P[16].ndc}.</p></div>
+    <footer><button class="btn ghost" data-act="close">Close</button><button class="btn" data-act="qa-go" data-testid="qa-submit">Add to cart</button></footer></div>`; },
+  move: s => { const c = cartById(s.cart); const targets = A().carts.filter(x=>x.type===c.type && x.id!==c.id); return `<div class="modal" role="dialog" aria-modal="true" data-testid="move-modal">${mHead('Move lines')}<div class="body"><p>Move ${UI.selected[c.id].length} selected lines to:</p>${targets.length?targets.map(t=>`<button class="btn ghost" style="width:100%;margin-bottom:8px;justify-content:flex-start" data-act="move-to" data-from="${c.id}" data-to="${t.id}" data-testid="move-target">${esc(t.isDefault?'Default cart '+t.orderNo:t.name)}</button>`).join(''):'<p class="muted">There are no other carts of this type. Create one from Cart actions.</p>'}</div></div>`; },
+  addlist: s => `<div class="modal" role="dialog" aria-modal="true" data-testid="add-list-modal">${mHead('Add to list')}<div class="body"><label style="display:flex;flex-direction:column;gap:4px">Shopping list<select data-list-pick data-testid="list-select">${A().lists.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}<option value="__new">New list…</option></select></label><input type="text" data-list-new placeholder="New list name" style="margin-top:8px;width:100%" data-testid="list-new-name"></div><footer><button class="btn ghost" data-act="close">Cancel</button><button class="btn" data-act="list-save" data-cart="${s.cart}" data-testid="list-save">Save to list</button></footer></div>`,
+  analyze: s => { const c = cartById(s.cart); const sugg = analyze(c); const total = r2(sugg.reduce((x,y)=>x+y.save,0)); return `<div class="modal side" role="dialog" aria-modal="true" data-testid="analyze-panel">${mHead('Find savings')}<div class="body">${sugg.length?`<p>Potential savings: <b data-testid="total-savings">${money(total)}</b></p>${sugg.map(g=>`<div class="panel" data-testid="suggestion"><b>${esc(prod(g.from).name)}</b><div class="kv" style="grid-template-columns:1fr auto;margin:8px 0"><span class="muted">Current (${esc(prod(g.from).mfr)})</span><span>${money(g.cur)}</span><span class="muted">Alternative (${esc(prod(g.to).mfr)})</span><span>${money(g.alt)}</span><span>Savings</span><b>${money(g.save)}</b></div><button class="btn small" data-act="apply-sugg" data-cart="${c.id}" data-from="${g.from}" data-to="${g.to}" data-testid="apply-suggestion">Apply</button></div>`).join('')}`:`<p data-testid="optimized">Your cart is already optimized.</p>`}</div></div>`; },
+  review: s => { const c = cartById(s.cart); const risky = c.lines.filter(l=>prod(l.pid).stock==='out' && !l.subs).length; return `<div class="modal wide" role="dialog" aria-modal="true" data-testid="order-review">${mHead(s.step?'Controlled-substance order':'Order review')}${s.step?`<div class="wizard">${steps(2)}`:''}<div class="body">
+    <div class="kv"><span class="muted">Cart</span><span>${esc(c.isDefault?'Default cart '+c.orderNo:c.name)}</span><span class="muted">PO number</span><span data-testid="review-po">${esc(c.po)||'—'}</span><span class="muted">Submission method</span><span data-testid="review-method">${methodLabel(c.method)}</span>${s.utn?`<span class="muted">Unique tracking number</span><b data-testid="review-utn">${esc(s.utn)}</b>`:''}${s.form222?`<span class="muted">DEA Form 222 serial</span><b>${esc(s.form222)}</b>`:''}</div>
+    ${risky?`<div class="warn" data-testid="ship-warning">${I.warn}<span>${risky} items may not ship. They are out of stock and substitutions are off.</span></div>`:''}
+    <table><thead><tr><th>Product</th><th class="num">Qty</th><th class="num">Invoice cost</th><th class="num">Total</th></tr></thead><tbody>${c.lines.map(l=>`<tr><td>${esc(prod(l.pid).name)}, ${prod(l.pid).size}</td><td class="num">${l.qty}</td><td class="num">${money(prod(l.pid).cost)}</td><td class="num">${money(lineTotal(l))}</td></tr>`).join('')}<tr><td colspan="3" class="num"><b>Total cost</b></td><td class="num"><b data-testid="review-total">${money(cartTotal(c))}</b></td></tr></tbody></table></div>${s.step?'</div>':''}
+    <footer><button class="btn ghost" data-act="${s.step?'csos-back':'close'}" data-testid="review-back">Back</button><button class="btn" data-act="place" data-testid="place-order">Place order</button></footer></div>`; },
+  utn: s => { const c = cartById(s.cart); return `<div class="modal wide" role="dialog" aria-modal="true" data-testid="purchase-confirmation">${mHead('Controlled-substance order')}<div class="wizard">${steps(1)}<div class="body">
+    <dl class="summary-card"><dt>Cart</dt><dd>${esc(c.isDefault?'Default cart '+c.orderNo:c.name)}</dd><dt>Method</dt><dd>Electronic (CSOS)</dd><dt>DEA registration</dt><dd data-testid="dea-number">${A().dea}</dd></dl>
+    <label style="display:flex;flex-direction:column;gap:4px;font-weight:600">Unique tracking number<input type="text" value="${esc(s.utn)}" data-utn maxlength="12" class="${s.err?'invalid':''}" data-testid="utn-input" autofocus></label>
+    ${s.err?`<div class="err" data-testid="utn-error">${esc(s.err)}</div>`:''}
+    <div class="disclosure" data-testid="utn-disclosure">We prefill a suggested tracking number to save you time. You remain responsible for making sure each number is unique and sequential across every CSOS order you send to any supplier, per DEA rules.</div>
+    <p style="font-size:14px" data-testid="signature-note">${I.pen} <b>CSOS orders are held until you sign them electronically.</b></p></div></div>
+    <footer><button class="btn ghost" data-act="close">Cancel</button><button class="btn" data-act="utn-continue" ${s.err||!s.utn?'disabled':''} data-testid="utn-continue">Continue</button></footer></div>`; },
+  form222: s => `<div class="modal" role="dialog" aria-modal="true" data-testid="form222-modal">${mHead('Paper DEA order')}<div class="body"><p>Enter the serial number printed on your blank DEA Form 222.</p><label style="display:flex;flex-direction:column;gap:4px;font-weight:600">DEA Form 222 serial number<input type="text" value="${esc(s.val||'')}" data-f222 data-testid="form222-input" autofocus></label>${s.err?`<div class="err" data-testid="form222-error">${esc(s.err)}</div>`:''}</div><footer><button class="btn ghost" data-act="close">Cancel</button><button class="btn" data-act="f222-continue" data-testid="form222-continue">Continue</button></footer></div>`,
+  placed: s => `<div class="modal" role="dialog" aria-modal="true" data-testid="order-confirmation">${mHead('Order placed')}<div class="body"><p style="font-size:18px">Order <b data-testid="confirmation-number">${s.number}</b></p><p>Status: <b data-testid="confirmation-status">${s.status}</b></p>${s.status==='Awaiting signature'?'<p class="muted">Sign this order on the CSOS page to release it for shipping.</p>':s.status==='Awaiting DEA form'?'<p class="muted">Mail the completed DEA Form 222 to Katalian MedSource, Controlled Substances Desk, 400 Harbor Way, Columbus, OH 43215.</p>':''}</div><footer><button class="btn ghost" data-act="close">Close</button><button class="btn" data-act="view-placed" data-id="${s.id}" data-testid="view-order">View order</button></footer></div>`,
+  feedback: s => `<div class="modal" role="dialog" aria-modal="true" data-testid="feedback-modal">${mHead('Send feedback')}<div class="body"><p>How would you rate Katalian MedSource?</p><div class="rating">${[1,2,3,4,5].map(n=>`<button aria-pressed="${s.rating===n}" data-act="rate" data-n="${n}" data-testid="rating-${n}">${n}</button>`).join('')}</div><label style="display:flex;flex-direction:column;gap:4px;margin-top:14px">Comments (optional)<textarea rows="3" data-fb data-testid="feedback-comment">${esc(s.comment||'')}</textarea></label></div><footer><button class="btn ghost" data-act="close">Cancel</button><button class="btn" data-act="fb-submit" ${s.rating?'':'disabled'} data-testid="feedback-submit">Submit</button></footer></div>`,
+};
+const steps = n => `<ol data-testid="step-indicator"><li class="${n===1?'on':'done'}"><span>1</span>Tracking number</li><li class="${n===2?'on':''}"><span>2</span>Review and place</li></ol>`;
+const cartById = id => A().carts.find(c=>c.id===id);
+
+function analyze(c){
+  const out = [];
+  c.lines.forEach(l=>{ const p = prod(l.pid); const best = P.filter(q=>q.group===p.group && q.id!==p.id && q.stock!=='out' && q.cost<p.cost).sort((a,b)=>a.cost-b.cost)[0];
+    if(best) out.push({from:p.id, to:best.id, cur:r2(l.qty*p.cost), alt:r2(l.qty*best.cost), save:r2(l.qty*(p.cost-best.cost))}); });
+  return out;
+}
+
+/* ---------- actions ---------- */
+function touch(c){ c.updatedBy = user().handle; c.updatedAt = new Date().toISOString(); }
+function addToCart(c, pid, qty){ const ex = c.lines.find(l=>l.pid===pid); if(ex) ex.qty += qty; else c.lines.push({pid, qty, subs:!prod(pid).c2}); touch(c); }
+function suggestUTN(){ const used = new Set(A().usedUTN); let n; do { n = 'KM' + String(Math.floor(1000000 + Math.random()*8999999)); } while(used.has(n)); return n; }
+function validateUTN(v){ if(!v) return 'Enter a unique tracking number.'; if(!UTN_RE.test(v)) return 'Unique tracking number must be exactly 9 letters or numbers.'; if(A().usedUTN.includes(v.toUpperCase())) return 'This unique tracking number was already used on a previous order. Enter a new one.'; return ''; }
+
+function placeOrder(cartId, extra){
+  const a = A(); const c = cartById(cartId);
+  const o = {id:uid(), number:c.orderNo, date:new Date().toISOString(), po:c.po, memo:c.memo, method:c.method, type:c.type, utn:extra.utn?extra.utn.toUpperCase():'', form222:extra.form222||'', status:extra.status, lines:c.lines.map(l=>({pid:l.pid, qty:l.qty, shipped:l.qty, cost:prod(l.pid).cost}))};
+  a.orders.push(o); if(o.utn) a.usedUTN.push(o.utn);
+  if(c.isDefault){ c.lines = []; c.po=''; c.memo=''; c.orderNo = String(DB.seq++); touch(c); } else { a.carts = a.carts.filter(x=>x.id!==c.id); }
+  delete UI.selected[c.id];
+  save(); openModal({type:'placed', number:o.number, status:o.status, id:o.id}); render();
+}
+
+function exportCSV(){
+  const pend = UI.boView==='pending'; const list = A().backorders.filter(b => pend ? b.status==='Pending' : b.status!=='Pending');
+  const head = pend ? ['Product','NDC','Order number','Qty backordered','Order date','Expected'] : ['Product','NDC','Order number','Qty backordered','Order date','Status','Closed'];
+  const rows = list.map(b=>{ const p = prod(b.pid); const base = [`${p.name}, ${p.size}`, p.ndc, b.orderNumber, b.qty, fmtDate(b.orderDate)]; return pend ? [...base, fmtDate(b.expected)] : [...base, b.status, fmtDate(b.closed)]; });
+  const csv = [head, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  try{ const blob = new Blob([csv],{type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backorders-${pend?'pending':'history'}.csv`; document.body.appendChild(a); a.click(); a.remove(); toast(`Exported ${rows.length} rows`); }catch(e){ toast('Export isn’t available in this browser', true); }
+}
+
+let confirmFn = null;
+function confirmDo(title, msg, fn, ok, danger){ confirmFn = fn; openModal({type:'confirm', title, msg, ok, danger}); }
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  const menuLink = e.target.closest('.dd-menu a');
+  if(menuLink){ UI.openMenu = null; if(menuLink.getAttribute('href')===location.hash){ e.preventDefault(); startLoad(); } return; }
+  // close dropdowns on outside click
+  if(UI.openMenu && !e.target.closest('.dd')){ UI.openMenu = null; if(!t) { render(); return; } }
+  if(e.target.id==='scrim'){ closeModal(); return; }
+  if(!t) return;
+  const d = t.dataset, act = d.act;
+  const c = d.cart ? cartById(d.cart) : null;
+  switch(act){
+    case 'nav': e.preventDefault(); go(d.r); break;
+    case 'menu': UI.openMenu = UI.openMenu===d.key ? null : d.key; render(); break;
+    case 'logout': S = {}; UI = freshUI(); save(); location.hash=''; render(); break;
+    case 'reset': confirmDo('Reset demo data','This restores every account, cart, order and message to its starting state.', resetDemo, 'Reset'); break;
+    case 'switch-acct': if(user().accounts.length>1) openModal({type:'accounts'}); break;
+    case 'pick-acct': S.account = d.id; UI = {...freshUI(), searchTerm:UI.searchTerm}; save(); closeModal(); toast(`Switched to ${A().name}`); startLoad(); break;
+    case 'quickadd': openModal({type:'quickadd', cart: (A().carts.find(c=>c.type==='non'&&c.isDefault)||{}).id, rows:[{code:'',qty:'1'},{code:'',qty:'1'},{code:'',qty:'1'}]}); break;
+    case 'qa-row': if(modalState.rows.length<25){ syncQA(); modalState.rows.push({code:'',qty:'1'}); renderModal(); } break;
+    case 'qa-go': { syncQA(); const tc = cartById(modalState.cart); let added = 0;
+      modalState.rows.forEach(r=>{ if(!r.code.trim()){ r.result=''; r.ok=null; return; } const p = findByCode(r.code);
+        if(!p){ r.result='Item not found'; r.ok=false; return; }
+        if(p.c2 !== (tc.type==='c2')){ r.result='Wrong cart type for this item'; r.ok=false; return; }
+        if(!validQty(r.qty)){ r.result='Enter a quantity from 1 to 999'; r.ok=false; return; }
+        if(p.discontinued){ r.result='Discontinued'; r.ok=false; return; }
+        addToCart(tc, p.id, +r.qty); r.result=`Added ${r.qty} x ${p.name}`; r.ok=true; added++; });
+      save(); renderModal(); render(); if(added) toast(`Added ${added} items to ${tc.isDefault?'Default cart':tc.name}`); break; }
+    case 'add': { const p = prod(d.pid); const v = document.querySelector(`[data-sq="${p.id}"]`).value.trim();
+      if(!validQty(v)){ UI.addErr[p.id] = 'Enter a quantity from 1 to 999'; render(); break; }
+      const tc = A().carts.find(c=>c.isDefault && c.type===(p.c2?'c2':'non'));
+      const inCart = (tc.lines.find(l=>l.pid===p.id)||{qty:0}).qty;
+      if(p.alloc && inCart + +v > allocRemaining(p)){ UI.addErr[p.id] = `Quantity exceeds remaining allocation of ${allocRemaining(p)}`; render(); break; }
+      delete UI.addErr[p.id]; addToCart(tc, p.id, +v); save(); render(); toast(`Added ${v} x ${p.name} to ${tc.isDefault?'Default cart '+tc.orderNo:tc.name}`); break; }
+    case 'alloc': openModal({type:'alloc', pid:d.pid}); break;
+    case 'subs': openModal({type:'subs', pid:d.pid, cart:d.cart}); break;
+    case 'swap': { const cc = cartById(d.cart); const l = cc.lines.find(x=>x.pid===d.from); const ex = cc.lines.find(x=>x.pid===d.to);
+      if(ex){ ex.qty += l.qty; cc.lines = cc.lines.filter(x=>x!==l); } else { l.pid = d.to; } touch(cc); save(); closeModal(); render(); toast('Product swapped'); break; }
+    case 'prodlink': e.preventDefault(); UI.searchTerm = prod(d.pid).ndc; go('search'); break;
+    case 'tab': UI.tab = d.t; UI.editing = null; render(); break;
+    case 'summary': UI.summaryOpen = !UI.summaryOpen; render(); break;
+    case 'toggle-cart': UI.expanded[d.cart] = !UI.expanded[d.cart]; render(); break;
+    case 'new-cart': { const a = A(); let i = 1; while(a.carts.some(x=>x.name===`New cart ${i}`)) i++;
+      const nc = {id:uid(), name:`New cart ${i}`, orderNo:String(DB.seq++), type:UI.tab, isDefault:false, po:'', memo:'', updatedBy:user().handle, updatedAt:new Date().toISOString(), method:UI.tab==='c2'?'csos':'po', lines:[]};
+      a.carts.push(nc); UI.openMenu = null; UI.summaryOpen = true; UI.expanded[nc.id] = true; save(); render(); toast(`Created ${nc.name}`); break; }
+    case 'edit': { const val = d.field==='name' ? c.name : c[d.field]; UI.editing = {cart:c.id, field:d.field, value:val, err:''}; render(); const inp = document.querySelector('[data-edit]'); inp && inp.focus(); break; }
+    case 'cancel-edit': UI.editing = null; render(); break;
+    case 'save-edit': saveEdit(); break;
+    case 'del-cart': if(c.isDefault) break; confirmDo('Delete cart', `Delete cart ${c.name}? This cannot be undone.`, ()=>{ A().carts = A().carts.filter(x=>x.id!==c.id); save(); render(); toast(`Deleted ${c.name}`); }, 'Delete', true); break;
+    case 'sort': { const s = UI.sort[d.cart]; UI.sort[d.cart] = {col:d.col, dir: s && s.col===d.col && s.dir==='asc' ? 'desc' : 'asc'}; render(); break; }
+    case 'bulk-move': openModal({type:'move', cart:c.id}); break;
+    case 'move-to': { const from = cartById(d.from), to = cartById(d.to); const sel = UI.selected[from.id];
+      from.lines.filter(l=>sel.includes(l.pid)).forEach(l=>addToCart(to, l.pid, l.qty)); from.lines = from.lines.filter(l=>!sel.includes(l.pid)); UI.selected[from.id] = []; touch(from); save(); closeModal(); render(); toast(`Moved ${sel.length} lines to ${to.isDefault?'Default cart':to.name}`); break; }
+    case 'bulk-del': { const sel = UI.selected[c.id]; confirmDo('Delete lines', `Delete ${sel.length} selected lines from this cart?`, ()=>{ c.lines = c.lines.filter(l=>!sel.includes(l.pid)); UI.selected[c.id] = []; touch(c); save(); render(); toast(`Deleted ${sel.length} lines`); }, 'Delete', true); break; }
+    case 'bulk-list': openModal({type:'addlist', cart:c.id}); break;
+    case 'list-save': { const pick = document.querySelector('[data-list-pick]').value; const nn = document.querySelector('[data-list-new]').value.trim(); const a = A(); let L;
+      if(pick==='__new'){ if(!nn){ toast('Enter a name for the new list', true); break; } L = {id:uid(), name:nn, items:[]}; a.lists.push(L); } else L = a.lists.find(x=>x.id===pick);
+      UI.selected[d.cart].forEach(pid=>{ if(!L.items.includes(pid)) L.items.push(pid); }); save(); closeModal(); toast(`Saved ${UI.selected[d.cart].length} products to ${L.name}`); break; }
+    case 'analyze': openModal({type:'analyze', cart:c.id}); break;
+    case 'apply-sugg': { const l = c.lines.find(x=>x.pid===d.from); const ex = c.lines.find(x=>x.pid===d.to); if(ex){ ex.qty += l.qty; c.lines = c.lines.filter(x=>x!==l); } else l.pid = d.to; touch(c); save(); renderModal(); render(); toast('Suggestion applied'); break; }
+    case 'submit': { if(!c.lines.length) break;
+      if(c.type==='c2' && c.method==='csos') openModal({type:'utn', cart:c.id, utn:suggestUTN(), err:''});
+      else if(c.type==='c2' && c.method==='paper') openModal({type:'form222', cart:c.id});
+      else openModal({type:'review', cart:c.id}); break; }
+    case 'utn-continue': { const v = document.querySelector('[data-utn]').value.trim(); const err = validateUTN(v); if(err){ modalState.utn = v; modalState.err = err; renderModal(); break; } modalState = {type:'review', cart:modalState.cart, step:2, utn:v.toUpperCase()}; renderModal(); break; }
+    case 'csos-back': modalState = {type:'utn', cart:modalState.cart, utn:modalState.utn, err:''}; renderModal(); break;
+    case 'f222-continue': { const v = document.querySelector('[data-f222]').value.trim(); if(!/^\d{9}$/.test(v)){ modalState.val = v; modalState.err = 'Enter the 9-digit serial number from your DEA Form 222.'; renderModal(); break; } modalState = {type:'review', cart:modalState.cart, form222:v}; renderModal(); break; }
+    case 'place': { const s = modalState; const cc = cartById(s.cart); const status = cc.type==='c2' && cc.method==='csos' ? 'Awaiting signature' : cc.type==='c2' && cc.method==='paper' ? 'Awaiting DEA form' : 'Submitted'; placeOrder(s.cart, {utn:s.utn, form222:s.form222, status}); break; }
+    case 'view-placed': UI.orderId = d.id; closeModal(); go('order-details'); break;
+    case 'open-order': e.preventDefault(); UI.orderId = d.id; go('order-details'); break;
+    case 'page': UI.orderPage = +d.p; render(); break;
+    case 'reorder': { const o = A().orders.find(x=>x.id===d.id); const skipped = []; let n = 0;
+      o.lines.forEach(l=>{ const p = prod(l.pid); if(p.discontinued){ skipped.push(p.name); return; } addToCart(A().carts.find(c=>c.isDefault && c.type===(p.c2?'c2':'non')), p.id, l.qty); n++; });
+      save(); render(); toast(`Added ${n} lines to your default cart${skipped.length?`. Skipped discontinued: ${skipped.join(', ')}`:''}`); break; }
+    case 'bo': UI.boView = d.v; render(); break;
+    case 'cancel-bo': confirmDo('Cancel backorder','Cancel this backorder? The remaining quantity will not ship.', ()=>{ const b = A().backorders.find(x=>x.id===d.id); b.status='Cancelled'; b.closed=new Date().toISOString(); save(); render(); toast('Backorder cancelled'); }, 'Cancel backorder', true); break;
+    case 'export': exportCSV(); break;
+    case 'sign': { const o = A().orders.find(x=>x.id===d.id); o.status = 'Submitted'; save(); render(); toast(`Order ${o.number} signed and submitted`); break; }
+    case 'open-msg': { const m = A().messages.find(x=>x.id===d.id); UI.msgOpen = UI.msgOpen===m.id ? null : m.id;
+      // Planted defect KM-44: opening a message marks it read but does not decrement the badge
+      m.read = true; save(); render(); break; }
+    case 'markall': A().messages.forEach(m=>m.read=true); A().unreadBadge = 0; save(); render(); break;
+    case 'dismiss-edi': A().edi.dismissed = true; save(); render(); break;
+    case 'feedback': openModal({type:'feedback', rating:0}); break;
+    case 'rate': modalState.rating = +d.n; modalState.comment = (document.querySelector('[data-fb]')||{}).value; renderModal(); break;
+    case 'fb-submit': closeModal(); toast('Thanks for your feedback'); break;
+    case 'confirm-ok': { const f = confirmFn; confirmFn = null; closeModal(); f && f(); break; }
+    case 'close': closeModal(); break;
+    case 'retry': startLoad(); break;
+    case 'simfail': S.failNext = true; save(); UI.openMenu = null; render(); toast('The next page you open will fail to load'); break;
+  }
+});
+
+function syncQA(){ document.querySelectorAll('[data-qa-code]').forEach(i=>modalState.rows[+i.dataset.qaCode].code = i.value); document.querySelectorAll('[data-qa-qty]').forEach(i=>modalState.rows[+i.dataset.qaQty].qty = i.value); const s = document.querySelector('[data-qa-cart]'); if(s) modalState.cart = s.value; }
+
+function saveEdit(){
+  const ed = UI.editing; const c = cartById(ed.cart); const v = document.querySelector('[data-edit]').value.trim(); ed.value = v;
+  if(ed.field==='name'){
+    if(!v) ed.err = 'Cart name is required.';
+    else if(v.length>30) ed.err = 'Cart name can be up to 30 characters.';
+    else if(A().carts.some(x=>x.id!==c.id && x.name.toLowerCase()===v.toLowerCase())) ed.err = 'You already have a cart with this name.';
+    else { c.name = v; ed.err = ''; }
+  } else if(ed.field==='po'){
+    if(v.length>PO_MAX || !/^[A-Za-z0-9-]*$/.test(v)) ed.err = 'PO number can use up to 20 letters, numbers and hyphens.';
+    else { c.po = v; ed.err=''; }
+  } else {
+    if(v.length>100) ed.err = 'PO memo can be up to 100 characters.'; else { c.memo = v; ed.err=''; }
+  }
+  if(!ed.err){ touch(c); UI.editing = null; save(); }
+  render();
+}
+
+document.addEventListener('change', e => {
+  const t = e.target, d = t.dataset;
+  if(d.qty){ const c = cartById(d.qty); const l = c.lines.find(x=>x.pid===d.pid); const k = c.id+'|'+d.pid; const v = t.value.trim();
+    if(v==='0'){ t.value = l.qty; confirmDo('Remove line','Remove this line?', ()=>{ c.lines = c.lines.filter(x=>x!==l); touch(c); save(); render(); }, 'Remove', true); return; }
+    if(!validQty(v, CART_QTY_MAX)){ UI.qtyErr[k] = {v, m:'Enter a quantity from 1 to 999'}; render(); return; }
+    delete UI.qtyErr[k]; l.qty = +v; touch(c); save(); render(); return; }
+  if(d.sel){ const arr = UI.selected[d.sel] = UI.selected[d.sel] || []; if(t.checked) arr.push(d.pid); else UI.selected[d.sel] = arr.filter(x=>x!==d.pid); render(); return; }
+  if(d.selall){ const c = cartById(d.selall); UI.selected[c.id] = t.checked ? c.lines.map(l=>l.pid) : []; render(); return; }
+  if(d.subs){ const c = cartById(d.subs); c.lines.find(x=>x.pid===d.pid).subs = t.checked; touch(c); save(); render(); return; }
+  if(d.method){ const c = cartById(d.method); c.method = t.value; touch(c); save(); render(); return; }
+  if(d.of){ UI.orderFilter[d.of] = t.value; if(d.of!=='q'){ UI.orderPage = 1; render(); } return; }
+  if(t.matches('[data-qa-cart]')){ modalState.cart = t.value; return; }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(t.matches('[data-utn]') && modalState){ modalState.utn = t.value; const err = t.value.trim() ? validateUTN(t.value.trim()) : 'Enter a unique tracking number.'; const btn = document.querySelector('[data-testid=utn-continue]'); btn.disabled = !!err; }
+  if(t.matches('[data-of="q"]')) UI.orderFilter.q = t.value;
+});
+document.addEventListener('submit', e => {
+  const f = e.target.dataset.form; if(!f) return; e.preventDefault();
+  if(f==='login'){ doLogin($('#lu').value, $('#lp').value); }
+  if(f==='search'){ UI.searchTerm = e.target.querySelector('input').value; UI.addErr = {}; go('search'); }
+  if(f==='orderfilter'){ UI.orderPage = 1; render(); }
+});
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape'){ if(modalState) closeModal(); else if(UI.openMenu){ UI.openMenu = null; render(); } }
+  if(e.key==='Enter'){
+    if(e.target.matches('[data-edit]')){ e.preventDefault(); saveEdit(); }
+    if(e.target.matches('.msg')) e.target.click();
+    if(e.target.matches('[data-sq]')){ e.preventDefault(); document.querySelector(`[data-act=add][data-pid="${e.target.dataset.sq}"]`).click(); }
+  }
+});
+
+render();
+</script>
+</body>
+</html>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Katalian MedSource</title>
